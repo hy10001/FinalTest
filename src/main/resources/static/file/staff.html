@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>食堂管理系统 - 库存管理</title>
+    <title>食堂管理系统 - 员工管理</title>
     <style>
         * {
             margin: 0;
@@ -47,7 +47,7 @@
             padding: 20px;
         }
 
-        /* 库存概览卡片 */
+        /* 员工统计卡片 */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -60,10 +60,6 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .stat-card.warning {
-            border-left: 4px solid #ff9800;
         }
 
         .stat-card h3 {
@@ -105,8 +101,8 @@
             color: white;
         }
 
-        .btn-warning {
-            background-color: #ff9800;
+        .btn-danger {
+            background-color: #f44336;
             color: white;
         }
 
@@ -154,28 +150,35 @@
             background-color: #f8f9fa;
         }
 
-        /* 库存状态标签 */
-        .stock-status {
+        /* 员工状态标签 */
+        .status-tag {
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
         }
 
-        .status-normal {
+        .status-active {
             background-color: #e8f5e9;
             color: #4caf50;
         }
 
-        .status-warning {
+        .status-leave {
             background-color: #fff3e0;
             color: #ff9800;
         }
 
-        .status-danger {
+        .status-inactive {
             background-color: #ffebee;
             color: #f44336;
         }
 
+        /* 员工头像样式 */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
         /* 添加到现有的 style 标签中 */
         a {
             text-decoration: none;  /* 删除下划线 */
@@ -188,7 +191,7 @@
     <!-- 侧边栏 -->
     <div class="sidebar">
         <ul class="sidebar-menu">
-            <a href="index.html" ><li>首页</li></a>
+            <a href="../index.html" ><li>首页</li></a>
             <a href="dishes.html" ><li>菜品管理</li></a>
             <a href="orders.html" ><li>订单管理</li></a>
             <a href="inventory.html" ><li>库存管理</li></a>
@@ -199,101 +202,116 @@
 
     <!-- 主要内容区域 -->
     <div class="main-content">
-        <!-- 库存概览 -->
+        <!-- 员工统计 -->
         <div class="stats-container">
             <div class="stat-card">
-                <h3>库存物品总数</h3>
-                <div class="number">156</div>
-            </div>
-            <div class="stat-card warning">
-                <h3>库存预警</h3>
-                <div class="number">8</div>
+                <h3>在职员工</h3>
+                <div class="number">45</div>
             </div>
             <div class="stat-card">
-                <h3>本月入库金额</h3>
-                <div class="number">￥25,630</div>
+                <h3>本月新入职</h3>
+                <div class="number">3</div>
             </div>
             <div class="stat-card">
-                <h3>本月消耗金额</h3>
-                <div class="number">￥18,920</div>
+                <h3>请假人数</h3>
+                <div class="number">2</div>
+            </div>
+            <div class="stat-card">
+                <h3>本月离职</h3>
+                <div class="number">1</div>
             </div>
         </div>
 
         <!-- 操作栏 -->
         <div class="operation-bar">
             <div class="search-filters">
-                <input type="text" class="search-box" placeholder="搜索物品名称...">
+                <input type="text" class="search-box" placeholder="搜索员工姓名...">
                 <select class="filter-select">
-                    <option value="">物品分类</option>
-                    <option value="vegetables">蔬菜</option>
-                    <option value="meat">肉类</option>
-                    <option value="seafood">海鲜</option>
-                    <option value="condiment">调味料</option>
+                    <option value="">部门</option>
+                    <option value="kitchen">厨房</option>
+                    <option value="service">服务</option>
+                    <option value="cashier">收银</option>
+                    <option value="admin">管理</option>
                 </select>
                 <select class="filter-select">
-                    <option value="">库存状态</option>
-                    <option value="normal">正常</option>
-                    <option value="warning">预警</option>
-                    <option value="danger">紧缺</option>
+                    <option value="">状态</option>
+                    <option value="active">在职</option>
+                    <option value="leave">请假</option>
+                    <option value="inactive">离职</option>
                 </select>
                 <button class="btn btn-primary">搜索</button>
             </div>
-            <div>
-                <button class="btn btn-primary">入库登记</button>
-                <button class="btn btn-warning">导出报表</button>
-            </div>
+            <button class="btn btn-primary">添加员工</button>
         </div>
 
-        <!-- 库存表格 -->
-        <!-- 库存表格 -->
+        <!-- 员工表格 -->
         <div class="table-container">
             <table>
                 <thead>
                 <tr>
-                    <th>物品名称</th>
-                    <th>分类</th>
-                    <th>当前库存</th>
-                    <th>库存状态</th>
-                    <th>单价</th>
-                    <th>最近入库</th>
+                    <th>员工信息</th>
+                    <th>工号</th>
+                    <th>部门</th>
+                    <th>职位</th>
+                    <th>联系电话</th>
+                    <th>入职时间</th>
+                    <th>状态</th>
                     <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>土豆</td>
-                    <td>蔬菜</td>
-                    <td>80kg</td>
-                    <td><span class="stock-status status-normal">正常</span></td>
-                    <td>￥2.5/kg</td>
-                    <td>2024-01-01</td>
                     <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
+                            <span>张三</span>
+                        </div>
+                    </td>
+                    <td>EMP001</td>
+                    <td>厨房</td>
+                    <td>主厨</td>
+                    <td>13800138000</td>
+                    <td>2023-01-15</td>
+                    <td><span class="status-tag status-active">在职</span></td>
+                    <td>
+                        <button class="btn btn-primary">编辑</button>
+                        <button class="btn btn-danger">离职</button>
                     </td>
                 </tr>
                 <tr>
-                    <td>猪肉</td>
-                    <td>肉类</td>
-                    <td>25kg</td>
-                    <td><span class="stock-status status-warning">预警</span></td>
-                    <td>￥32/kg</td>
-                    <td>2024-01-02</td>
                     <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
+                            <span>李四</span>
+                        </div>
+                    </td>
+                    <td>EMP002</td>
+                    <td>服务</td>
+                    <td>服务员</td>
+                    <td>13900139000</td>
+                    <td>2023-03-20</td>
+                    <td><span class="status-tag status-leave">请假</span></td>
+                    <td>
+                        <button class="btn btn-primary">编辑</button>
+                        <button class="btn btn-danger">离职</button>
                     </td>
                 </tr>
                 <tr>
-                    <td>生抽</td>
-                    <td>调味料</td>
-                    <td>5瓶</td>
-                    <td><span class="stock-status status-danger">紧缺</span></td>
-                    <td>￥12/瓶</td>
-                    <td>2024-01-01</td>
                     <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
+                            <span>王五</span>
+                        </div>
+                    </td>
+                    <td>EMP003</td>
+                    <td>收银</td>
+                    <td>收银员</td>
+                    <td>13700137000</td>
+                    <td>2023-06-01</td>
+                    <td><span class="status-tag status-active">在职</span></td>
+                    <td>
+                        <button class="btn btn-primary">编辑</button>
+                        <button class="btn btn-danger">离职</button>
                     </td>
                 </tr>
                 </tbody>
