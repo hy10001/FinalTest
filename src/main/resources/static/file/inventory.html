@@ -176,7 +176,6 @@
             color: #f44336;
         }
 
-        /* 添加到现有的 style 标签中 */
         a {
             text-decoration: none;  /* 删除下划线 */
             color: inherit;  /* 继承父元素的颜色 */
@@ -185,8 +184,123 @@
 </head>
 <body>
 <div class="container">
-    <!-- 侧边栏及其他HTML结构保持不变 -->
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <a href="index.html" ><li>首页</li></a>
+            <a href="dishes.html" ><li>菜品管理</li></a>
+            <a href="orders.html" ><li>订单管理</li></a>
+            <a href="inventory.html" ><li>库存管理</li></a>
+            <a href="staff.html" ><li>员工管理</li></a>
+            <a href="finance.html" ><li>财务管理</li></a>
+        </ul>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="main-content">
+        <!-- 库存概览 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h3>库存物品总数</h3>
+                <div class="number">156</div>
+            </div>
+            <div class="stat-card warning">
+                <h3>库存预警</h3>
+                <div class="number">8</div>
+            </div>
+            <div class="stat-card">
+                <h3>本月入库金额</h3>
+                <div class="number">￥25,630</div>
+            </div>
+            <div class="stat-card">
+                <h3>本月消耗金额</h3>
+                <div class="number">￥18,920</div>
+            </div>
+        </div>
+
+        <!-- 操作栏 -->
+        <div class="operation-bar">
+            <div class="search-filters">
+                <input type="text" class="search-box" placeholder="搜索物品名称...">
+                <select class="filter-select">
+                    <option value="">物品分类</option>
+                    <option value="vegetables">蔬菜</option>
+                    <option value="meat">肉类</option>
+                    <option value="seafood">海鲜</option>
+                    <option value="condiment">调味料</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">库存状态</option>
+                    <option value="normal">正常</option>
+                    <option value="warning">预警</option>
+                    <option value="danger">紧缺</option>
+                </select>
+                <button class="btn btn-primary">搜索</button>
+            </div>
+            <div>
+                <button class="btn btn-primary">入库登记</button>
+                <button class="btn btn-warning">导出报表</button>
+            </div>
+        </div>
+
+        <!-- 库存表格 -->
+        <!-- 库存表格 -->
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>物品名称</th>
+                    <th>分类</th>
+                    <th>当前库存</th>
+                    <th>库存状态</th>
+                    <th>单价</th>
+                    <th>最近入库</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>土豆</td>
+                    <td>蔬菜</td>
+                    <td>80kg</td>
+                    <td><span class="stock-status status-normal">正常</span></td>
+                    <td>￥2.5/kg</td>
+                    <td>2024-01-01</td>
+                    <td>
+                        <button class="btn btn-primary">入库</button>
+                        <button class="btn btn-warning">出库</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>猪肉</td>
+                    <td>肉类</td>
+                    <td>25kg</td>
+                    <td><span class="stock-status status-warning">预警</span></td>
+                    <td>￥32/kg</td>
+                    <td>2024-01-02</td>
+                    <td>
+                        <button class="btn btn-primary">入库</button>
+                        <button class="btn btn-warning">出库</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>生抽</td>
+                    <td>调味料</td>
+                    <td>5瓶</td>
+                    <td><span class="stock-status status-danger">紧缺</span></td>
+                    <td>￥12/瓶</td>
+                    <td>2024-01-01</td>
+                    <td>
+                        <button class="btn btn-primary">入库</button>
+                        <button class="btn btn-warning">出库</button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+</body>
 <script src="js/axios.min.js"></script>
 <script>
     // 获取操作栏中的“入库登记”按钮
@@ -385,5 +499,4 @@
         csvOption.textContent = 'CSV格式';
         const xlsxOption = document.createElement('option');
 </script>
-</body>
 </html>
