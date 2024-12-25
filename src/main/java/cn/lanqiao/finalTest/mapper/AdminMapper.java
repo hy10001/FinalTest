@@ -1,5 +1,6 @@
 package cn.lanqiao.finalTest.mapper;
 
+
 import cn.lanqiao.finalTest.dao.Admin;
 import org.apache.ibatis.annotations.Select;
 

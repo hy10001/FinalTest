@@ -268,7 +268,7 @@
 
             // 使用axios发送POST请求到后端进行入库登记
             axios({
-                url: "/inventory/stock-in", // 假设的后端入库登记接口地址，需根据实际调整
+                url: "/inventory/stock-in",
                 method: "post",
                 data: {
                     itemName: itemName,
@@ -305,7 +305,7 @@
                 }
                 // 使用axios发送POST请求到后端更新库存（入库操作）
                 axios({
-                    url: "/inventory/update-stock", // 假设的后端库存更新接口地址，需根据实际调整
+                    url: "/inventory/update-stock",
                     method: "post",
                     data: {
                         itemName: itemName,
@@ -343,7 +343,7 @@
                 }
                 // 使用axios发送POST请求到后端更新库存（出库操作）
                 axios({
-                    url: "/inventory/update-stock", // 假设的后端库存更新接口地址，需根据实际调整
+                    url: "/inventory/update-stock",
                     method: "post",
                     data: {
                         itemName: itemName,
@@ -372,6 +372,7 @@
         createPopup('搜索', [searchValueInput], (values) => {
             const [searchValue] = values;
             // 这里可以添加根据输入的关键词进行搜索的逻辑，比如筛选表格内容等
+
             console.log('搜索关键词：', searchValue);
         });
     });
