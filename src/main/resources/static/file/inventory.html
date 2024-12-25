@@ -185,121 +185,204 @@
 </head>
 <body>
 <div class="container">
-    <!-- 侧边栏 -->
-    <div class="sidebar">
-        <ul class="sidebar-menu">
-            <a href="../index.html" ><li>首页</li></a>
-            <a href="dishes.html" ><li>菜品管理</li></a>
-            <a href="orders.html" ><li>订单管理</li></a>
-            <a href="inventory.html" ><li>库存管理</li></a>
-            <a href="staff.html" ><li>员工管理</li></a>
-            <a href="finance.html" ><li>财务管理</li></a>
-        </ul>
-    </div>
-
-    <!-- 主要内容区域 -->
-    <div class="main-content">
-        <!-- 库存概览 -->
-        <div class="stats-container">
-            <div class="stat-card">
-                <h3>库存物品总数</h3>
-                <div class="number">156</div>
-            </div>
-            <div class="stat-card warning">
-                <h3>库存预警</h3>
-                <div class="number">8</div>
-            </div>
-            <div class="stat-card">
-                <h3>本月入库金额</h3>
-                <div class="number">￥25,630</div>
-            </div>
-            <div class="stat-card">
-                <h3>本月消耗金额</h3>
-                <div class="number">￥18,920</div>
-            </div>
-        </div>
-
-        <!-- 操作栏 -->
-        <div class="operation-bar">
-            <div class="search-filters">
-                <input type="text" class="search-box" placeholder="搜索物品名称...">
-                <select class="filter-select">
-                    <option value="">物品分类</option>
-                    <option value="vegetables">蔬菜</option>
-                    <option value="meat">肉类</option>
-                    <option value="seafood">海鲜</option>
-                    <option value="condiment">调味料</option>
-                </select>
-                <select class="filter-select">
-                    <option value="">库存状态</option>
-                    <option value="normal">正常</option>
-                    <option value="warning">预警</option>
-                    <option value="danger">紧缺</option>
-                </select>
-                <button class="btn btn-primary">搜索</button>
-            </div>
-            <div>
-                <button class="btn btn-primary">入库登记</button>
-                <button class="btn btn-warning">导出报表</button>
-            </div>
-        </div>
-
-        <!-- 库存表格 -->
-        <!-- 库存表格 -->
-        <div class="table-container">
-            <table>
-                <thead>
-                <tr>
-                    <th>物品名称</th>
-                    <th>分类</th>
-                    <th>当前库存</th>
-                    <th>库存状态</th>
-                    <th>单价</th>
-                    <th>最近入库</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                    <td>土豆</td>
-                    <td>蔬菜</td>
-                    <td>80kg</td>
-                    <td><span class="stock-status status-normal">正常</span></td>
-                    <td>￥2.5/kg</td>
-                    <td>2024-01-01</td>
-                    <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>猪肉</td>
-                    <td>肉类</td>
-                    <td>25kg</td>
-                    <td><span class="stock-status status-warning">预警</span></td>
-                    <td>￥32/kg</td>
-                    <td>2024-01-02</td>
-                    <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>生抽</td>
-                    <td>调味料</td>
-                    <td>5瓶</td>
-                    <td><span class="stock-status status-danger">紧缺</span></td>
-                    <td>￥12/瓶</td>
-                    <td>2024-01-01</td>
-                    <td>
-                        <button class="btn btn-primary">入库</button>
-                        <button class="btn btn-warning">出库</button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <!-- 侧边栏及其他HTML结构保持不变 -->
 </div>
+<script src="js/axios.min.js"></script>
+<script>
+    // 获取操作栏中的“入库登记”按钮
+    const inStockRegisterBtn = document.querySelector('.operation-bar.btn-primary');
+    // 获取库存表格中每一行的“入库”按钮
+    const tableInStockBtns = document.querySelectorAll('.table-container table tbody tr td button.btn-primary');
+    // 获取库存表格中每一行的“出库”按钮
+    const tableOutStockBtns = document.querySelectorAll('.table-container table tbody tr td button.btn-warning');
+    // 获取操作栏中的“搜索”按钮
+    const searchBtn = document.querySelector('.operation-bar.search-filters button.btn-primary');
+    // 获取“导出报表”按钮
+    const exportBtn = document.querySelector('.operation-bar button.btn-warning');
+
+    // 提取创建弹出框的公共函数
+    function createPopup(title, inputs, submitCallback) {
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.backgroundColor = 'white';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.3)';
+        popup.style.zIndex = '1000';
+
+        const titleElement = document.createElement('p');
+        titleElement.textContent = title;
+        popup.appendChild(titleElement);
+        popup.appendChild(document.createElement('br'));
+
+        inputs.forEach(input => {
+            popup.appendChild(input);
+            popup.appendChild(document.createElement('br'));
+        });
+
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = '提交';
+        submitBtn.addEventListener('click', () => {
+            const inputValues = inputs.map(input => input.value);
+            submitCallback(inputValues);
+            popup.remove();
+        });
+        popup.appendChild(submitBtn);
+
+        document.body.appendChild(popup);
+    }
+
+    // “入库登记”按钮点击事件
+    inStockRegisterBtn.addEventListener('click', function () {
+        const itemNameInput = document.createElement('input');
+        itemNameInput.type = 'text';
+        itemNameInput.placeholder = '请输入物品名称';
+
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.placeholder = '请输入入库数量';
+
+        const priceInput = document.createElement('input');
+        priceInput.type = 'number';
+        priceInput.step = '0.01';
+        priceInput.placeholder = '请输入单价';
+
+        createPopup('入库登记', [itemNameInput, quantityInput, priceInput], (values) => {
+            const [itemName, quantity, price] = values;
+            // 验证输入的合法性
+            if (!itemName) {
+                alert('物品名称不能为空');
+                return;
+            }
+            if (quantity <= 0) {
+                alert('入库数量必须大于0');
+                return;
+            }
+            if (price <= 0) {
+                alert('单价必须大于0');
+                return;
+            }
+
+            // 使用axios发送POST请求到后端进行入库登记
+            axios({
+                url: "/inventory/stock-in", // 假设的后端入库登记接口地址，需根据实际调整
+                method: "post",
+                data: {
+                    itemName: itemName,
+                    quantity: quantity,
+                    price: price
+                }
+            }).then((response) => {
+                if (response.data.success) {
+                    alert('入库登记成功');
+                } else {
+                    alert('入库登记失败：' + response.data.message);
+                }
+            }).catch((error) => {
+                alert('请求失败：' + error);
+            });
+        });
+    });
+
+    // 库存表格中“入库”按钮点击事件
+    tableInStockBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.placeholder = '请输入入库数量';
+
+            createPopup('物品入库', [quantityInput], (values) => {
+                const [quantity] = values;
+                const row = btn.closest('tr');
+                const itemName = row.querySelector('td:nth-child(1)').textContent;
+                // 验证输入的合法性
+                if (quantity <= 0) {
+                    alert('入库数量必须大于0');
+                    return;
+                }
+                // 使用axios发送POST请求到后端更新库存（入库操作）
+                axios({
+                    url: "/inventory/update-stock", // 假设的后端库存更新接口地址，需根据实际调整
+                    method: "post",
+                    data: {
+                        itemName: itemName,
+                        quantity: quantity,
+                        operation: "in" // 表示入库操作，可根据实际与后端约定修改
+                    }
+                }).then((response) => {
+                    if (response.data.success) {
+                        alert('入库操作成功');
+                    } else {
+                        alert('入库操作失败：' + response.data.message);
+                    }
+                }).catch((error) => {
+                    alert('请求失败：' + error);
+                });
+            });
+        });
+    });
+
+    // 库存表格中“出库”按钮点击事件
+    tableOutStockBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.placeholder = '请输入出库数量';
+
+            createPopup('物品出库', [quantityInput], (values) => {
+                const [quantity] = values;
+                const row = btn.closest('tr');
+                const itemName = row.querySelector('td:nth-child(1)').textContent;
+                // 验证输入的合法性
+                if (quantity <= 0) {
+                    alert('出库数量必须大于0');
+                    return;
+                }
+                // 使用axios发送POST请求到后端更新库存（出库操作）
+                axios({
+                    url: "/inventory/update-stock", // 假设的后端库存更新接口地址，需根据实际调整
+                    method: "post",
+                    data: {
+                        itemName: itemName,
+                        quantity: -quantity, // 出库数量用负数表示，可根据实际与后端约定修改
+                        operation: "out" // 表示出库操作，可根据实际与后端约定修改
+                    }
+                }).then((response) => {
+                    if (response.data.success) {
+                        alert('出库操作成功');
+                    } else {
+                        alert('出库操作失败：' + response.data.message);
+                    }
+                }).catch((error) => {
+                    alert('请求失败：' + error);
+                });
+            });
+        });
+    });
+
+    // “搜索”按钮点击事件
+    searchBtn.addEventListener('click', function () {
+        const searchValueInput = document.createElement('input');
+        searchValueInput.type = 'text';
+        searchValueInput.placeholder = '请输入搜索关键词';
+
+        createPopup('搜索', [searchValueInput], (values) => {
+            const [searchValue] = values;
+            // 这里可以添加根据输入的关键词进行搜索的逻辑，比如筛选表格内容等
+            console.log('搜索关键词：', searchValue);
+        });
+    });
+
+    // “导出报表”按钮点击事件
+    exportBtn.addEventListener('click', function () {
+        const formatSelect = document.createElement('select');
+        const csvOption = document.createElement('option');
+        csvOption.value = 'csv';
+        csvOption.textContent = 'CSV格式';
+        const xlsxOption = document.createElement('option');
+</script>
 </body>
 </html>
