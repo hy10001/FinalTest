@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>食堂订餐系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            background-color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 主要内容区域 */
+        .content {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* 菜品列表区域 */
+        .menu-section {
+            flex: 2;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 购物车区域 */
+        .cart-section {
+            flex: 1;
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+
+        /* 菜品分类 */
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .category-tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            background-color: #f5f5f5;
+        }
+
+        .category-tab.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* 菜品卡片 */
+        .dishes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .dish-card {
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.2s;
+        }
+
+        .dish-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .dish-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .dish-info {
+            padding: 15px;
+        }
+
+        .dish-title {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .dish-price {
+            color: #e53935;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            padding: 8px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .add-to-cart:hover {
+            background-color: #45a049;
+        }
+
+        /* 购物车样式 */
+        .cart-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-items {
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-title {
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-price {
+            color: #e53935;
+            font-size: 14px;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-btn {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .cart-total {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-align: right;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .checkout-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>食堂订餐系统</h1>
+        <div>
+            <span>欢迎，用户</span>
+        </div>
+    </div>
+
+    <div class="content">
+        <!-- 菜品列表区域 -->
+        <div class="menu-section">
+            <div class="category-tabs">
+                <div class="category-tab active">热菜</div>
+                <div class="category-tab">凉菜</div>
+                <div class="category-tab">主食</div>
+                <div class="category-tab">汤类</div>
+            </div>
+
+            <div class="dishes-grid">
+                <!-- 菜品卡片 -->
+                <div class="dish-card">
+                    <img src="https://via.placeholder.com/200x150" alt="红烧肉" class="dish-image">
+                    <div class="dish-info">
+                        <h3 class="dish-title">红烧肉</h3>
+                        <div class="dish-price">￥28</div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+
+                <div class="dish-card">
+                    <img src="https://via.placeholder.com/200x150" alt="宫保鸡丁" class="dish-image">
+                    <div class="dish-info">
+                        <h3 class="dish-title">宫保鸡丁</h3>
+                        <div class="dish-price">￥22</div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+
+                <div class="dish-card">
+                    <img src="https://via.placeholder.com/200x150" alt="青椒肉丝" class="dish-image">
+                    <div class="dish-info">
+                        <h3 class="dish-title">青椒肉丝</h3>
+                        <div class="dish-price">￥20</div>
+                        <button class="add-to-cart">加入购物车</button>
+                    </div>
+                </div>
+
+                <!-- 更多菜品卡片 -->
+            </div>
+        </div>
+
+        <!-- 购物车区域 -->
+        <div class="cart-section">
+            <h2 class="cart-title">购物车</h2>
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">红烧肉</div>
+                        <div class="cart-item-price">￥28</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn">-</button>
+                        <span>1</span>
+                        <button class="quantity-btn">+</button>
+                    </div>
+                </div>
+
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">宫保鸡丁</div>
+                        <div class="cart-item-price">￥22</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn">-</button>
+                        <span>1</span>
+                        <button class="quantity-btn">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-total">
+                总计：￥50
+            </div>
+
+            <button class="checkout-btn">提交订单</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
