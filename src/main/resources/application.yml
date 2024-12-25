@@ -1,13 +1,13 @@
-#???
+#端口号
 server:
   port: 8080
 
-#?????
+#数据库配置
 spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://localhost:3306/software3?&useSSL=false&serverTimezone=UTC&characterEncoding=utf8&characterSetResults=utf8
+    url: jdbc:mysql://47.109.206.82
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
