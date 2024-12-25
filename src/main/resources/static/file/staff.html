@@ -225,7 +225,7 @@
         <!-- 操作栏 -->
         <div class="operation-bar">
             <div class="search-filters">
-                <input type="text" class="search-box" placeholder="搜索员工姓名...">
+                <input id="likeInput" type="text" class="search-box" placeholder="搜索员工姓名...">
                 <select class="filter-select">
                     <option value="">部门</option>
                     <option value="kitchen">厨房</option>
@@ -239,7 +239,7 @@
                     <option value="leave">请假</option>
                     <option value="inactive">离职</option>
                 </select>
-                <button class="btn btn-primary">搜索</button>
+                <button class="btn btn-primary" onclick="selectLike()">搜索</button>
             </div>
             <button class="btn btn-primary">添加员工</button>
         </div>
@@ -259,61 +259,28 @@
                     <th>操作</th>
                 </tr>
                 </thead>
-                <tbody>
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>张三</span>
-                        </div>
-                    </td>
-                    <td>EMP001</td>
-                    <td>厨房</td>
-                    <td>主厨</td>
-                    <td>13800138000</td>
-                    <td>2023-01-15</td>
-                    <td><span class="status-tag status-active">在职</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>李四</span>
-                        </div>
-                    </td>
-                    <td>EMP002</td>
-                    <td>服务</td>
-                    <td>服务员</td>
-                    <td>13900139000</td>
-                    <td>2023-03-20</td>
-                    <td><span class="status-tag status-leave">请假</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>王五</span>
-                        </div>
-                    </td>
-                    <td>EMP003</td>
-                    <td>收银</td>
-                    <td>收银员</td>
-                    <td>13700137000</td>
-                    <td>2023-06-01</td>
-                    <td><span class="status-tag status-active">在职</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
-                    </td>
-                </tr>
+<!--                <tbody>-->
+<!--                <tr>-->
+<!--                    <td>-->
+<!--                        <div style="display: flex; align-items: center; gap: 10px;">-->
+<!--                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">-->
+<!--                            <span>张三</span>-->
+<!--                        </div>-->
+<!--                    </td>-->
+<!--                    <td>EMP001</td>-->
+<!--                    <td>厨房</td>-->
+<!--                    <td>主厨</td>-->
+<!--                    <td>13800138000</td>-->
+<!--                    <td>2023-01-15</td>-->
+<!--                    <td><span class="status-tag status-active">在职</span></td>-->
+<!--                    <td>-->
+<!--                        <button class="btn btn-primary">编辑</button>-->
+<!--                        <button class="btn btn-danger">离职</button>-->
+<!--                    </td>-->
+<!--                </tr>-->
+<!--                </tbody>-->
+                <tbody id="adminTable">
+                <!-- 用户数据将会在这里动态加载 -->
                 </tbody>
             </table>
         </div>
@@ -321,3 +288,190 @@
 </div>
 </body>
 </html>
+<!--使用axios发送前端请求到后端-->
+<script src="../js/axios.min.js"></script>
+<script>
+    function register(){
+        axios({
+            // params关键字只针对get请求(axios默认是发送GET请求)
+            url: 'http://localhost:8080/employee/add',
+            method:'post',
+            // data关键字是针对post请求的
+            data:{
+                username:document.getElementById('username').value,
+                password:document.getElementById('password').value,
+                code:document.getElementById('code').value
+            }
+        }).then((result) => {
+            console.log(result.data.code);
+            if(result.data.code == 200){
+                alert('添加成功');
+            }else if (result.data.code == 304){
+                alert('添加失败');
+            }
+        }).catch(function (error) {
+            // 请求失败处理
+            console.log(error);
+            alert('注册异常，请联系管理员')
+        })
+    }
+</script>
+<script>
+    <!-- 模糊查询请求 -->
+    function selectLike() {
+        axios({
+            url: 'http://localhost:8080/employee/add',
+            method: 'post',
+            data: {
+                username: document.querySelector("#likeInput").value
+            }
+        }).then((result) => {
+            // console.log(result);
+            if (result.data.data && result.data.data.length > 0) {
+                const data = result.data.data;
+                const tableBody = document.querySelector('#adminTable');
+
+                // 清空现有的表格内容
+                tableBody.innerHTML = '';
+
+                // 循环遍历数据并添加到表格
+                data.forEach(user => {
+                    const row = document.createElement('tr');
+                    // 创建选择单元格
+                    const chooseCell = document.createElement('td');
+                    chooseCell.style.width = "6%";
+                    chooseCell.style.textAlign = "center";
+                    chooseCell.style.backgroundColor = "#EEEEEE"; // 设置背景颜色
+                    const checkbox = document.createElement('input');
+                    checkbox.type = "checkbox";
+                    checkbox.name = "delid"; // 设置name属性
+                    chooseCell.appendChild(checkbox);
+                    row.appendChild(chooseCell);
+
+                    // 创建ID单元格
+                    const idCell = document.createElement('td');
+                    idCell.width = "6%";
+                    idCell.style.textAlign = "center";
+                    idCell.innerHTML = '<input type="checkbox">';
+                    idCell.bgColor = '#EEEEEE'
+                    idCell.textContent = user.id;
+
+                    row.appendChild(idCell);
+
+                    // 创建用户名单元格
+                    const usernameCell = document.createElement('td');
+                    usernameCell.width = "6%";
+                    usernameCell.style.textAlign = "center";
+                    usernameCell.innerHTML = '<input type="checkbox">';
+                    usernameCell.bgColor = '#EEEEEE'
+                    usernameCell.textContent = user.username;
+                    row.appendChild(usernameCell);
+
+                    // 创建密码单元格
+                    const passwordCell = document.createElement('td');
+                    // passwordCell.textContent = '***'; // 为了安全起见，不显示真实密码
+                    passwordCell.width = "6%";
+                    passwordCell.style.textAlign = "center";
+                    passwordCell.innerHTML = '<input type="checkbox">';
+                    passwordCell.textContent = user.password; // 为了安全起见，不显示真实密码
+                    passwordCell.bgColor = '#EEEEEE';
+                    row.appendChild(passwordCell);
+
+                    // 创建昵称单元格
+                    const nicknameCell = document.createElement('td');
+                    nicknameCell.width = "6%";
+                    nicknameCell.style.textAlign = "center";
+                    nicknameCell.innerHTML = '<input type="checkbox">';
+                    nicknameCell.textContent = user.nickname;
+                    nicknameCell.bgColor = '#EEEEEE'
+                    row.appendChild(nicknameCell);
+
+                    // 创建操作单元格
+                    const actionsCell = document.createElement('td');
+                    actionsCell.style.align = 'center'
+                    actionsCell.bgColor = '#EEEEEE'
+                    // 这里可以添加编辑、删除等按钮
+                    // 创建编辑按钮
+                    const editButton = document.createElement('button');
+                    editButton.textContent = '编辑';
+                    editButton.className = 'edit-button';
+                    editButton.setAttribute('data-id', user.id);
+                    editButton.setAttribute('data-username', user.username);
+                    editButton.setAttribute('data-password', user.password);
+                    editButton.setAttribute('data-nickname', user.nickname);
+
+                    // 直接给当前编辑按钮添加点击事件
+                    editButton.addEventListener('click', function (event) {
+                        event.preventDefault();
+                        // 显示模态框并填充数据
+                        document.getElementById('editId').value = user.id;
+                        document.getElementById('editUsername').value = user.username;
+                        document.getElementById('editPassword').value = user.password;
+                        document.getElementById('editNickname').value = user.nickname;
+                        document.getElementById('editModal').style.display = 'block';
+                    });
+                    // 关闭模态框
+                    document.querySelector('.close').addEventListener('click', function () {
+                        document.getElementById('editModal').style.display = 'none';
+                    });
+
+                    document.querySelector('.cancel').addEventListener('click', function () {
+                        document.getElementById('editModal').style.display = 'none';
+                    });
+
+                    // 点击模态框外区域关闭模态框
+                    window.onclick = function (event) {
+                        const modal = document.getElementById('editModal');
+                        if (event.target === modal) {
+                            modal.style.display = 'none';
+                        }
+                    };
+
+                    //删除按钮
+                    const deleteButton = document.createElement('button');
+                    deleteButton.bgColor = '#EEEEEE'
+                    deleteButton.textContent = '删除';
+                    //在创建删除按钮的时候给按钮绑定用户ID
+                    deleteButton.setAttribute('data-user-id', user.id); // 绑定用户ID
+                    //思路：点击按钮时将删除的id给到后端
+                    deleteButton.onclick = function () {
+                        event.preventDefault(); // 防止任何可能的默认行为
+                        //获取当前点击行的id
+                        let userId = event.target.getAttribute('data-user-id');
+                        // console.log(userId)
+                        //询问是否删除该数据
+                        if (confirm("是否删除该数据")) {
+                            //发送请求
+                            // console.log(111)
+                            axios({
+                                url: 'http://localhost:8080/tAdmin/delete',
+                                method: 'delete',
+                                data: {
+                                    id: userId
+                                }
+                            }).then((result) => {
+                                if (result.data.code == '200') {
+                                    location.reload()
+                                    // location.href= 'adminList.html'
+                                }
+                            })
+                        }
+
+                    }
+
+                    actionsCell.appendChild(editButton);
+                    actionsCell.appendChild(deleteButton);
+                    row.appendChild(actionsCell);
+
+                    // 将新行添加到表格主体
+                    tableBody.appendChild(row);
+                });
+
+            } else {
+                alert('没有用户数据或数据为空');
+            }
+        }).catch(function (error) {
+            alert('请求异常，请联系管理员: ' + error);
+        });
+    }
+</script>
