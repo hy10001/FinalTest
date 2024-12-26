@@ -288,9 +288,9 @@
                     </div>
                 </div>
                 <div class="dish-card" data-dish-id="7">
-                    <img src="../img/delicacies/miantiao.jpg" alt="面条" class="dish-image">
+                    <img src="../img/delicacies/mantou.jpg" alt="馒头" class="dish-image">
                     <div class="dish-info">
-                        <h3 class="dish-title">面条</h3>
+                        <h3 class="dish-title">馒头</h3>
                         <div class="dish-price">￥3</div>
                         <button class="add-to-cart">加入购物车</button>
                     </div>
@@ -356,111 +356,109 @@
     </div>
 </div>
 <script>
-    // 添加到购物车
-    function addToCart(dishId, quantity) {
-        const userId = 1; // 直接使用固定用户ID，比如1
-        fetch('/api/cart/add', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `userId=${userId}&dishId=${dishId}&quantity=${quantity}`
-        })
-            .then(response => {
-                if (response.ok) {
-                    updateCartDisplay();
-                }
-            })
-            .catch(error => console.error('Error:', error));
+// 用于存储购物车数据的数组
+let cartItems = [];
+
+// 添加到购物车
+function addToCart(dishId, quantity) {
+    const dishCard = document.querySelector(`.dish-card[data-dish-id="${dishId}"]`);
+    const dishName = dishCard.querySelector('.dish-title').textContent;
+    const price = parseFloat(dishCard.querySelector('.dish-price').textContent.replace('￥', ''));
+    
+    // 检查商品是否已在购物车中
+    const existingItem = cartItems.find(item => item.dishId === dishId);
+    
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cartItems.push({
+            dishId: dishId,
+            dishName: dishName,
+            price: price,
+            quantity: quantity
+        });
     }
+    
+    updateCartDisplay();
+}
 
-    // 更新购物车显示
-    function updateCartDisplay() {
-        const userId = 1; // 固定用户ID
-        fetch(`/api/cart/items?userId=${userId}`)
-            .then(response => response.json())
-            .then(items => {
-                const cartItems = document.querySelector('.cart-items');
-                cartItems.innerHTML = ''; // 清空当前购物车显示
-
-                items.forEach(item => {
-                    cartItems.innerHTML += `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-title">${item.dishName}</div>
-                            <div class="cart-item-price">￥${item.price}</div>
-                        </div>
-                        <div class="quantity-controls">
-                            <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity - 1})">-</button>
-                            <span>${item.quantity}</span>
-                            <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity + 1})">+</button>
-                        </div>
+// 更新购物车显示
+function updateCartDisplay() {
+    const cartContainer = document.querySelector('.cart-items');
+    cartContainer.innerHTML = '';
+    
+    if (cartItems.length === 0) {
+        cartContainer.innerHTML = '<div class="empty-cart">购物车是空的</div>';
+    } else {
+        cartItems.forEach(item => {
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.dishName}</div>
+                        <div class="cart-item-price">￥${item.price}</div>
                     </div>
-                `;
-                });
-
-                // 更新总计
-                updateCartTotal();
-            });
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity - 1})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity + 1})">+</button>
+                    </div>
+                </div>
+            `;
+        });
     }
+    
+    updateCartTotal();
+}
 
-    // 更新购物车总金额
-    function updateCartTotal() {
-        const userId = 1; // 固定用户ID
-        fetch(`/api/cart/total?userId=${userId}`)
-            .then(response => response.json())
-            .then(total => {
-                document.querySelector('.cart-total').textContent = `总计：￥${total ? total.toFixed(2) : '0.00'}`;
-            });
-    }
-
-    // 更新商品数量
-    function updateQuantity(dishId, quantity) {
-        const userId = 1; // 固定用户ID
-        if (quantity <= 0) {
-            // 如果数量为0，则从购物车中移除
-            fetch('/api/cart/remove', {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `userId=${userId}&dishId=${dishId}`
-            })
-                .then(response => {
-                    if (response.ok) {
-                        updateCartDisplay();
-                    }
-                });
-        } else {
-            fetch('/api/cart/update', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: `userId=${userId}&dishId=${dishId}&quantity=${quantity}`
-            })
-                .then(response => {
-                    if (response.ok) {
-                        updateCartDisplay();
-                    }
-                });
+// 更新商品数量
+function updateQuantity(dishId, quantity) {
+    if (quantity <= 0) {
+        // 从购物车中移除商品
+        cartItems = cartItems.filter(item => item.dishId !== dishId);
+    } else {
+        // 更新商品数量
+        const item = cartItems.find(item => item.dishId === dishId);
+        if (item) {
+            item.quantity = quantity;
         }
     }
+    updateCartDisplay();
+}
 
-    // 页面加载时初始化购物车显示
-    document.addEventListener('DOMContentLoaded', function() {
-        // 初始化购物车显示
-        updateCartDisplay();
+// 更新购物车总金额
+function updateCartTotal() {
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    document.querySelector('.cart-total').textContent = `总计：￥${total.toFixed(2)}`;
+}
 
-        // 为所有"加入购物车"按钮添加点击事件
-        document.querySelectorAll('.add-to-cart').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const dishCard = e.target.closest('.dish-card');
-                const dishId = dishCard.dataset.dishId; // 需要在HTML中添加data-dish-id属性
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化空购物车
+    updateCartDisplay();
+    
+    // 为所有"加入购物车"按钮添加点击事件
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const dishCard = e.target.closest('.dish-card');
+            const dishId = parseInt(dishCard.dataset.dishId);
+            if (dishId) {
                 addToCart(dishId, 1);
-            });
+            }
         });
     });
+});
+
+// 提交订单按钮点击事件
+document.querySelector('.checkout-btn').addEventListener('click', function() {
+    if (cartItems.length === 0) {
+        alert('购物车是空的！');
+        return;
+    }
+    alert('订单提交成功！');
+    // 清空购物车
+    cartItems = [];
+    updateCartDisplay();
+});
 </script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
