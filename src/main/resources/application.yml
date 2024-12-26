@@ -6,8 +6,8 @@ server:
 spring:
   datasource:
     username: root
-    password: 123456
-    url: jdbc:mysql://47.109.206.82
+    password: 20010720Lmx
+    url: jdbc:mysql://47.109.206.82:3306/dreamTeam?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
@@ -20,6 +20,7 @@ spring:
           min-idle: 0
           max-wait: 1000ms
       database: 0
+
 transaction:
   rollback-on-commit-failure: true
   default-timeout: 30
