@@ -2,7 +2,6 @@ package cn.lanqiao.finalTest.service;
 
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryAdd;
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryEdit;
-import org.apache.ibatis.annotations.Update;
 
 public interface InventoryService {
     /**
