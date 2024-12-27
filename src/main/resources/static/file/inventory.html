@@ -379,21 +379,20 @@
                 alert('单价必须大于0');
                 return;
             }
-
             // 使用axios发送POST请求到后端进行入库登记
             axios({
-                url: "/inventory/stock-in",
+                url: "http://localhost:8080/inventory/add_stock",
                 method: "post",
                 data: {
                     itemName: itemName,
                     quantity: quantity,
                     price: price
                 }
-            }).then((response) => {
-                if (response.data.success) {
+            }).then((result) => {
+                if (result.data.code == 200) {
                     alert('入库登记成功');
-                } else {
-                    alert('入库登记失败：' + response.data.message);
+                } else if (result.data.code == 300) {
+                    alert('入库登记失败：' + result.data.message);
                 }
             }).catch((error) => {
                 alert('请求失败：' + error);
@@ -419,18 +418,18 @@
                 }
                 // 使用axios发送POST请求到后端更新库存（入库操作）
                 axios({
-                    url: "/inventory/update-stock",
+                    url: "http://localhost:8080/inventory/update_stock",
                     method: "post",
                     data: {
                         itemName: itemName,
                         quantity: quantity,
                         operation: "in" // 表示入库操作，可根据实际与后端约定修改
                     }
-                }).then((response) => {
-                    if (response.data.success) {
+                }).then((result) => {
+                    if (result.data.code == 200) {
                         alert('入库操作成功');
-                    } else {
-                        alert('入库操作失败：' + response.data.message);
+                    } else if (result.data.code == 300) {
+                        alert('入库操作失败：' + result.data.message);
                     }
                 }).catch((error) => {
                     alert('请求失败：' + error);
@@ -457,18 +456,18 @@
                 }
                 // 使用axios发送POST请求到后端更新库存（出库操作）
                 axios({
-                    url: "/inventory/update-stock",
+                    url: "http://localhost:8080/inventory/update_stock",
                     method: "post",
                     data: {
                         itemName: itemName,
                         quantity: -quantity, // 出库数量用负数表示，可根据实际与后端约定修改
                         operation: "out" // 表示出库操作，可根据实际与后端约定修改
                     }
-                }).then((response) => {
-                    if (response.data.success) {
+                }).then((result) => {
+                    if (result.data.code == 200) {
                         alert('出库操作成功');
-                    } else {
-                        alert('出库操作失败：' + response.data.message);
+                    } else if (result.data.code == 300) {
+                        alert('出库操作失败：' + result.data.message);
                     }
                 }).catch((error) => {
                     alert('请求失败：' + error);
@@ -497,5 +496,6 @@
         csvOption.value = 'csv';
         csvOption.textContent = 'CSV格式';
         const xlsxOption = document.createElement('option');
+    })
 </script>
 </html>
