@@ -385,8 +385,9 @@
                 method: "post",
                 data: {
                     itemName: itemName,
+                    category:category,
                     quantity: quantity,
-                    price: price
+                    unit:unit
                 }
             }).then((result) => {
                 if (result.data.code == 200) {
@@ -421,8 +422,8 @@
                     url: "http://localhost:8080/inventory/update_stock",
                     method: "post",
                     data: {
-                        itemName: itemName,
                         quantity: quantity,
+                        unit:unit,
                         operation: "in" // 表示入库操作，可根据实际与后端约定修改
                     }
                 }).then((result) => {
@@ -456,11 +457,11 @@
                 }
                 // 使用axios发送POST请求到后端更新库存（出库操作）
                 axios({
-                    url: "http://localhost:8080/inventory/update_stock",
+                    url: "http://localhost:8080/inventory/delete_stock",
                     method: "post",
                     data: {
                         itemName: itemName,
-                        quantity: -quantity, // 出库数量用负数表示，可根据实际与后端约定修改
+                        //quantity: -quantity, // 出库数量用负数表示，可根据实际与后端约定修改
                         operation: "out" // 表示出库操作，可根据实际与后端约定修改
                     }
                 }).then((result) => {
