@@ -2,7 +2,9 @@ package cn.lanqiao.finalTest.mapper;
 
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryAdd;
 import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Mapper;
 
+@Mapper
 public interface InventoryMapper {
     /**
      * 入库登记

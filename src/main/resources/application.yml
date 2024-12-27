@@ -11,7 +11,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host: 127.0.0.1
+      host: 47.109.206.82
       port: 6379
       lettuce:
         pool:

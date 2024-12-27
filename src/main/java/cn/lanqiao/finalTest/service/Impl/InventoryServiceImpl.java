@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 public class InventoryServiceImpl implements InventoryService {
     @Autowired
     private InventoryMapper inventoryMapper;
-
     public int add_stock(InventoryAdd inventoryAdd) {
         int result = inventoryMapper.add_stock(inventoryAdd);
         if (result > 0) {
