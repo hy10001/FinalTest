@@ -7,11 +7,11 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://47.109.206.82
+    url: jdbc:mysql:aws://lmxdxl99.com.cn:3306
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host: 127.0.0.1
+      host: 47.109.206.82
       port: 6379
       lettuce:
         pool:

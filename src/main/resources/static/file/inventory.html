@@ -176,7 +176,6 @@
             color: #f44336;
         }
 
-        /* 添加到现有的 style 标签中 */
         a {
             text-decoration: none;  /* 删除下划线 */
             color: inherit;  /* 继承父元素的颜色 */
@@ -188,7 +187,7 @@
     <!-- 侧边栏 -->
     <div class="sidebar">
         <ul class="sidebar-menu">
-            <a href="../index.html" ><li>首页</li></a>
+            <a href="index.html" ><li>首页</li></a>
             <a href="dishes.html" ><li>菜品管理</li></a>
             <a href="orders.html" ><li>订单管理</li></a>
             <a href="inventory.html" ><li>库存管理</li></a>
@@ -302,4 +301,202 @@
     </div>
 </div>
 </body>
+<script src="js/axios.min.js"></script>
+<script>
+    // 获取操作栏中的“入库登记”按钮
+    const inStockRegisterBtn = document.querySelector('.operation-bar.btn-primary');
+    // 获取库存表格中每一行的“入库”按钮
+    const tableInStockBtns = document.querySelectorAll('.table-container table tbody tr td button.btn-primary');
+    // 获取库存表格中每一行的“出库”按钮
+    const tableOutStockBtns = document.querySelectorAll('.table-container table tbody tr td button.btn-warning');
+    // 获取操作栏中的“搜索”按钮
+    const searchBtn = document.querySelector('.operation-bar.search-filters button.btn-primary');
+    // 获取“导出报表”按钮
+    const exportBtn = document.querySelector('.operation-bar button.btn-warning');
+
+    // 提取创建弹出框的公共函数
+    function createPopup(title, inputs, submitCallback) {
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.backgroundColor = 'white';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '8px';
+        popup.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.3)';
+        popup.style.zIndex = '1000';
+
+        const titleElement = document.createElement('p');
+        titleElement.textContent = title;
+        popup.appendChild(titleElement);
+        popup.appendChild(document.createElement('br'));
+
+        inputs.forEach(input => {
+            popup.appendChild(input);
+            popup.appendChild(document.createElement('br'));
+        });
+
+        const submitBtn = document.createElement('button');
+        submitBtn.textContent = '提交';
+        submitBtn.addEventListener('click', () => {
+            const inputValues = inputs.map(input => input.value);
+            submitCallback(inputValues);
+            popup.remove();
+        });
+        popup.appendChild(submitBtn);
+
+        document.body.appendChild(popup);
+    }
+
+    // “入库登记”按钮点击事件
+    inStockRegisterBtn.addEventListener('click', function () {
+        const itemNameInput = document.createElement('input');
+        itemNameInput.type = 'text';
+        itemNameInput.placeholder = '请输入物品名称';
+
+        const quantityInput = document.createElement('input');
+        quantityInput.type = 'number';
+        quantityInput.placeholder = '请输入入库数量';
+
+        const priceInput = document.createElement('input');
+        priceInput.type = 'number';
+        priceInput.step = '0.01';
+        priceInput.placeholder = '请输入单价';
+
+        createPopup('入库登记', [itemNameInput, quantityInput, priceInput], (values) => {
+            const [itemName, quantity, price] = values;
+            // 验证输入的合法性
+            if (!itemName) {
+                alert('物品名称不能为空');
+                return;
+            }
+            if (quantity <= 0) {
+                alert('入库数量必须大于0');
+                return;
+            }
+            if (price <= 0) {
+                alert('单价必须大于0');
+                return;
+            }
+            // 使用axios发送POST请求到后端进行入库登记
+            axios({
+                url: "http://localhost:8080/inventory/add_stock",
+                method: "post",
+                data: {
+                    itemName: itemName,
+                    category:category,
+                    quantity: quantity,
+                    unit:unit
+                }
+            }).then((result) => {
+                if (result.data.code == 200) {
+                    alert('入库登记成功');
+                } else if (result.data.code == 300) {
+                    alert('入库登记失败：' + result.data.message);
+                }
+            }).catch((error) => {
+                alert('请求失败：' + error);
+            });
+        });
+    });
+
+    // 库存表格中“入库”按钮点击事件
+    tableInStockBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.placeholder = '请输入入库数量';
+
+            createPopup('物品入库', [quantityInput], (values) => {
+                const [quantity] = values;
+                const row = btn.closest('tr');
+                const itemName = row.querySelector('td:nth-child(1)').textContent;
+                // 验证输入的合法性
+                if (quantity <= 0) {
+                    alert('入库数量必须大于0');
+                    return;
+                }
+                // 使用axios发送POST请求到后端更新库存（入库操作）
+                axios({
+                    url: "http://localhost:8080/inventory/update_stock",
+                    method: "post",
+                    data: {
+                        quantity: quantity,
+                        unit:unit,
+                        operation: "in" // 表示入库操作，可根据实际与后端约定修改
+                    }
+                }).then((result) => {
+                    if (result.data.code == 200) {
+                        alert('入库操作成功');
+                    } else if (result.data.code == 300) {
+                        alert('入库操作失败：' + result.data.message);
+                    }
+                }).catch((error) => {
+                    alert('请求失败：' + error);
+                });
+            });
+        });
+    });
+
+    // 库存表格中“出库”按钮点击事件
+    tableOutStockBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const quantityInput = document.createElement('input');
+            quantityInput.type = 'number';
+            quantityInput.placeholder = '请输入出库数量';
+
+            createPopup('物品出库', [quantityInput], (values) => {
+                const [quantity] = values;
+                const row = btn.closest('tr');
+                const itemName = row.querySelector('td:nth-child(1)').textContent;
+                // 验证输入的合法性
+                if (quantity <= 0) {
+                    alert('出库数量必须大于0');
+                    return;
+                }
+                // 使用axios发送POST请求到后端更新库存（出库操作）
+                axios({
+                    url: "http://localhost:8080/inventory/delete_stock",
+                    method: "post",
+                    data: {
+                        itemName: itemName,
+                        //quantity: -quantity, // 出库数量用负数表示，可根据实际与后端约定修改
+                        operation: "out" // 表示出库操作，可根据实际与后端约定修改
+                    }
+                }).then((result) => {
+                    if (result.data.code == 200) {
+                        alert('出库操作成功');
+                    } else if (result.data.code == 300) {
+                        alert('出库操作失败：' + result.data.message);
+                    }
+                }).catch((error) => {
+                    alert('请求失败：' + error);
+                });
+            });
+        });
+    });
+
+    // “搜索”按钮点击事件
+    searchBtn.addEventListener('click', function () {
+        const searchValueInput = document.createElement('input');
+        searchValueInput.type = 'text';
+        searchValueInput.placeholder = '请输入搜索关键词';
+
+        createPopup('搜索', [searchValueInput], (values) => {
+            const [searchValue] = values;
+            // 这里可以添加根据输入的关键词进行搜索的逻辑，比如筛选表格内容等\
+            console.log('搜索关键词：', searchValue);
+        });
+    });
+
+    // “导出报表”按钮点击事件
+    exportBtn.addEventListener('click', function () {
+        const formatSelect = document.createElement('select');
+        const csvOption = document.createElement('option');
+        csvOption.value = 'csv';
+        csvOption.textContent = 'CSV格式';
+        const xlsxOption = document.createElement('option');
+    })
+</script>
 </html>

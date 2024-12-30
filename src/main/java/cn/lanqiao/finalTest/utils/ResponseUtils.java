@@ -1,5 +1,4 @@
-package cn.lanqiao.finalTest.Utils;
-
+package cn.lanqiao.finalTest.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,5 +21,4 @@ public class ResponseUtils<T> {
         this.code = code;
         this.msg = msg;
     }
-
 }
