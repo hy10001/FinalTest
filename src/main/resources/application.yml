@@ -6,12 +6,12 @@ server:
 spring:
   datasource:
     username: root
-    password: 20010720Lmx
-    url: jdbc:mysql://47.109.206.82:3306/dreamTeam?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8
+    password: 123456
+    url: jdbc:mysql:aws://lmxdxl99.com.cn:3306
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host: 127.0.0.1
+      host: 47.109.206.82
       port: 6379
       lettuce:
         pool:
@@ -20,7 +20,6 @@ spring:
           min-idle: 0
           max-wait: 1000ms
       database: 0
-
 transaction:
   rollback-on-commit-failure: true
   default-timeout: 30
