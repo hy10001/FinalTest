@@ -229,7 +229,7 @@
 
             <div class="dishes-grid" id="hotDishes">
                 <!-- 热菜 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="1">
                     <img src="../img/delicacies/hongshaorou.jpg" alt="红烧肉" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">红烧肉</h3>
@@ -238,8 +238,7 @@
                     </div>
                 </div>
                 
-                <!-- 新增鱼香肉丝 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="2">
                     <img src="../img/delicacies/yuxiangrousi.jpg" alt="鱼香肉丝" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">鱼香肉丝</h3>
@@ -248,8 +247,7 @@
                     </div>
                 </div>
                 
-                <!-- 新增麻婆豆腐 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="3">
                     <img src="../img/delicacies/mapodoufu.jpg" alt="麻婆豆腐" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">麻婆豆腐</h3>
@@ -261,7 +259,7 @@
 
             <div class="dishes-grid" id="coldDishes" style="display: none;">
                 <!-- 凉菜 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="4">
                     <img src="../img/delicacies/liangbanhuanggua.jpg" alt="凉拌黄瓜" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">凉拌黄瓜</h3>
@@ -269,7 +267,7 @@
                         <button class="add-to-cart">加入购物车</button>
                     </div>
                 </div>
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="5">
                     <img src="../img/delicacies/liangbanpidan.jpg" alt="凉拌皮蛋" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">凉拌皮蛋</h3>
@@ -281,7 +279,7 @@
 
             <div class="dishes-grid" id="stapleFood" style="display: none;">
                 <!-- 主食 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="6">
                     <img src="../img/delicacies/mifan.jpg" alt="米饭" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">米饭</h3>
@@ -289,11 +287,11 @@
                         <button class="add-to-cart">加入购物车</button>
                     </div>
                 </div>
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="7">
                     <img src="../img/delicacies/mantou.jpg" alt="馒头" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">馒头</h3>
-                        <div class="dish-price">￥1</div>
+                        <div class="dish-price">￥3</div>
                         <button class="add-to-cart">加入购物车</button>
                     </div>
                 </div>
@@ -301,7 +299,7 @@
 
             <div class="dishes-grid" id="soups" style="display: none;">
                 <!-- 汤类 -->
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="8">
                     <img src="../img/delicacies/zicaidanhua.jpg" alt="紫菜蛋花汤" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">紫菜蛋花汤</h3>
@@ -309,7 +307,7 @@
                         <button class="add-to-cart">加入购物车</button>
                     </div>
                 </div>
-                <div class="dish-card">
+                <div class="dish-card" data-dish-id="9">
                     <img src="../img/delicacies/fanqiedan.jpg" alt="番茄蛋汤" class="dish-image">
                     <div class="dish-info">
                         <h3 class="dish-title">番茄蛋汤</h3>
@@ -357,7 +355,111 @@
         </div>
     </div>
 </div>
+<script>
+// 用于存储购物车数据的数组
+let cartItems = [];
 
+// 添加到购物车
+function addToCart(dishId, quantity) {
+    const dishCard = document.querySelector(`.dish-card[data-dish-id="${dishId}"]`);
+    const dishName = dishCard.querySelector('.dish-title').textContent;
+    const price = parseFloat(dishCard.querySelector('.dish-price').textContent.replace('￥', ''));
+    
+    // 检查商品是否已在购物车中
+    const existingItem = cartItems.find(item => item.dishId === dishId);
+    
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        cartItems.push({
+            dishId: dishId,
+            dishName: dishName,
+            price: price,
+            quantity: quantity
+        });
+    }
+    
+    updateCartDisplay();
+}
+
+// 更新购物车显示
+function updateCartDisplay() {
+    const cartContainer = document.querySelector('.cart-items');
+    cartContainer.innerHTML = '';
+    
+    if (cartItems.length === 0) {
+        cartContainer.innerHTML = '<div class="empty-cart">购物车是空的</div>';
+    } else {
+        cartItems.forEach(item => {
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.dishName}</div>
+                        <div class="cart-item-price">￥${item.price}</div>
+                    </div>
+                    <div class="quantity-controls">
+                        <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity - 1})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="quantity-btn" onclick="updateQuantity(${item.dishId}, ${item.quantity + 1})">+</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+    
+    updateCartTotal();
+}
+
+// 更新商品数量
+function updateQuantity(dishId, quantity) {
+    if (quantity <= 0) {
+        // 从购物车中移除商品
+        cartItems = cartItems.filter(item => item.dishId !== dishId);
+    } else {
+        // 更新商品数量
+        const item = cartItems.find(item => item.dishId === dishId);
+        if (item) {
+            item.quantity = quantity;
+        }
+    }
+    updateCartDisplay();
+}
+
+// 更新购物车总金额
+function updateCartTotal() {
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    document.querySelector('.cart-total').textContent = `总计：￥${total.toFixed(2)}`;
+}
+
+// 页面加载时初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化空购物车
+    updateCartDisplay();
+    
+    // 为所有"加入购物车"按钮添加点击事件
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', (e) => {
+            const dishCard = e.target.closest('.dish-card');
+            const dishId = parseInt(dishCard.dataset.dishId);
+            if (dishId) {
+                addToCart(dishId, 1);
+            }
+        });
+    });
+});
+
+// 提交订单按钮点击事件
+document.querySelector('.checkout-btn').addEventListener('click', function() {
+    if (cartItems.length === 0) {
+        alert('购物车是空的！');
+        return;
+    }
+    alert('订单提交成功！');
+    // 清空购物车
+    cartItems = [];
+    updateCartDisplay();
+});
+</script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const tabs = document.querySelectorAll('.category-tab');
