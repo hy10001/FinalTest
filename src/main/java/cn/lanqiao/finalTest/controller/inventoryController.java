@@ -1,9 +1,10 @@
 package cn.lanqiao.finalTest.controller;
 
+import cn.lanqiao.finalTest.Utils.ResponseUtils;
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryAdd;
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryEdit;
 import cn.lanqiao.finalTest.service.InventoryService;
-import cn.lanqiao.finalTest.utils.ResponseUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
