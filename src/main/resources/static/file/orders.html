@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>食堂管理系统 - 员工管理</title>
+    <title>食堂管理系统 - 订单管理</title>
     <style>
         * {
             margin: 0;
@@ -47,7 +47,7 @@
             padding: 20px;
         }
 
-        /* 员工统计卡片 */
+        /* 订单统计卡片 */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -84,30 +84,6 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        /* 按钮样式 */
-        .btn {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-
-        .btn-primary {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .btn-danger {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
         }
 
         /* 搜索框和筛选器 */
@@ -150,34 +126,49 @@
             background-color: #f8f9fa;
         }
 
-        /* 员工状态标签 */
+        /* 状态标签 */
         .status-tag {
             padding: 4px 8px;
             border-radius: 4px;
             font-size: 12px;
         }
 
-        .status-active {
-            background-color: #e8f5e9;
-            color: #4caf50;
-        }
-
-        .status-leave {
+        .status-pending {
             background-color: #fff3e0;
             color: #ff9800;
         }
 
-        .status-inactive {
+        .status-completed {
+            background-color: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .status-cancelled {
             background-color: #ffebee;
             color: #f44336;
         }
 
-        /* 员工头像样式 */
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
         }
         /* 添加到现有的 style 标签中 */
         a {
@@ -191,7 +182,7 @@
     <!-- 侧边栏 -->
     <div class="sidebar">
         <ul class="sidebar-menu">
-            <a href="index.html" ><li>首页</li></a>
+            <a href="../index.html" ><li>首页</li></a>
             <a href="dishes.html" ><li>菜品管理</li></a>
             <a href="orders.html" ><li>订单管理</li></a>
             <a href="inventory.html" ><li>库存管理</li></a>
@@ -202,116 +193,86 @@
 
     <!-- 主要内容区域 -->
     <div class="main-content">
-        <!-- 员工统计 -->
+        <!-- 订单统计 -->
         <div class="stats-container">
             <div class="stat-card">
-                <h3>在职员工</h3>
-                <div class="number">45</div>
+                <h3>今日订单总数</h3>
+                <div class="number">126</div>
             </div>
             <div class="stat-card">
-                <h3>本月新入职</h3>
-                <div class="number">3</div>
+                <h3>待处理订单</h3>
+                <div class="number">15</div>
             </div>
             <div class="stat-card">
-                <h3>请假人数</h3>
-                <div class="number">2</div>
+                <h3>今日营业额</h3>
+                <div class="number">￥3,580</div>
             </div>
             <div class="stat-card">
-                <h3>本月离职</h3>
-                <div class="number">1</div>
+                <h3>平均处理时间</h3>
+                <div class="number">12分钟</div>
             </div>
         </div>
 
         <!-- 操作栏 -->
         <div class="operation-bar">
             <div class="search-filters">
-                <input type="text" class="search-box" placeholder="搜索员工姓名...">
+                <input type="text" class="search-box" placeholder="搜索订单号...">
                 <select class="filter-select">
-                    <option value="">部门</option>
-                    <option value="kitchen">厨房</option>
-                    <option value="service">服务</option>
-                    <option value="cashier">收银</option>
-                    <option value="admin">管理</option>
+                    <option value="">订单状态</option>
+                    <option value="pending">待处理</option>
+                    <option value="processing">处理中</option>
+                    <option value="completed">已完成</option>
+                    <option value="cancelled">已取消</option>
                 </select>
-                <select class="filter-select">
-                    <option value="">状态</option>
-                    <option value="active">在职</option>
-                    <option value="leave">请假</option>
-                    <option value="inactive">离职</option>
-                </select>
+                <input type="date" class="filter-select">
                 <button class="btn btn-primary">搜索</button>
             </div>
-            <button class="btn btn-primary">添加员工</button>
+            <button class="btn btn-primary">导出订单</button>
         </div>
 
-        <!-- 员工表格 -->
+        <!-- 订单表格 -->
         <div class="table-container">
             <table>
                 <thead>
                 <tr>
-                    <th>员工信息</th>
-                    <th>工号</th>
-                    <th>部门</th>
-                    <th>职位</th>
-                    <th>联系电话</th>
-                    <th>入职时间</th>
+                    <th>订单编号</th>
+                    <th>下单时间</th>
+                    <th>订单内容</th>
+                    <th>金额</th>
                     <th>状态</th>
                     <th>操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
+                    <td>ORD20240101001</td>
+                    <td>2024-01-01 12:30</td>
+                    <td>红烧肉x1, 青椒肉丝x2</td>
+                    <td>￥39</td>
+                    <td><span class="status-tag status-pending">待处理</span></td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>张三</span>
-                        </div>
-                    </td>
-                    <td>EMP001</td>
-                    <td>厨房</td>
-                    <td>主厨</td>
-                    <td>13800138000</td>
-                    <td>2023-01-15</td>
-                    <td><span class="status-tag status-active">在职</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
+                        <button class="btn btn-primary">接单</button>
+                        <button class="btn btn-danger">取消</button>
                     </td>
                 </tr>
                 <tr>
+                    <td>ORD20240101002</td>
+                    <td>2024-01-01 12:35</td>
+                    <td>宫保鸡丁x1, 米饭x2</td>
+                    <td>￥22</td>
+                    <td><span class="status-tag status-completed">已完成</span></td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>李四</span>
-                        </div>
-                    </td>
-                    <td>EMP002</td>
-                    <td>服务</td>
-                    <td>服务员</td>
-                    <td>13900139000</td>
-                    <td>2023-03-20</td>
-                    <td><span class="status-tag status-leave">请假</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
+                        <button class="btn btn-primary">查看</button>
                     </td>
                 </tr>
                 <tr>
+                    <td>ORD20240101003</td>
+                    <td>2024-01-01 12:40</td>
+                    <td>番茄炒蛋x1, 米饭x1</td>
+                    <td>￥15</td>
+                    <td><span class="status-tag status-cancelled">已取消</span></td>
                     <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <img src="https://via.placeholder.com/40" alt="avatar" class="avatar">
-                            <span>王五</span>
-                        </div>
-                    </td>
-                    <td>EMP003</td>
-                    <td>收银</td>
-                    <td>收银员</td>
-                    <td>13700137000</td>
-                    <td>2023-06-01</td>
-                    <td><span class="status-tag status-active">在职</span></td>
-                    <td>
-                        <button class="btn btn-primary">编辑</button>
-                        <button class="btn btn-danger">离职</button>
+                        <button class="btn btn-primary">查看</button>
                     </td>
                 </tr>
                 </tbody>
