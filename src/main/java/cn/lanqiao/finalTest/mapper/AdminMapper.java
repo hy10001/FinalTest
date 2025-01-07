@@ -18,8 +18,6 @@ public interface AdminMapper {
 
     /**
      * 检查用户名是否存在
-     * @param username
-     * @return
      */
     @Select("SELECT * FROM admin WHERE username = #{username}")
     Admin findByUsername(String username);
