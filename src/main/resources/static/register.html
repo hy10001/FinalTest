@@ -115,53 +115,62 @@
     <form id="registerForm">
         <div class="form-group">
             <label for="username">账号</label>
-            <input type="text" id="username" name="username" required placeholder="请输入账号">
+            <input id="username" name="username" required placeholder="请输入账号">
             <div class="error-message" id="username-error">账号已存在</div>
         </div>
 
         <div class="form-group">
             <label for="password">密码</label>
-            <input type="password" id="password" name="password" required placeholder="请输入密码">
+            <input id="password" name="password" required placeholder="请输入密码">
         </div>
-
-        <div class="form-group">
-            <label for="confirm-password">确认密码</label>
-            <input type="password" id="confirm-password" name="confirm-password" required placeholder="请再次输入密码">
-            <div class="error-message" id="password-error">两次输入的密码不一致</div>
-        </div>
-
-        <button type="submit" class="register-btn">注册</button>
+<!--        <img src="/code" onclick="changeImage(this);" style="position: relative;cursor: pointer;top:22px;"/>-->
+        <button type="button" class="register-btn" onclick="register();">注册</button>
     </form>
 
     <div class="login-link">
         已有账号？<a href="login.html">立即登录</a>
     </div>
 </div>
-
+<script src="js/axios.min.js"></script>
 <script>
-    document.getElementById('registerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirm-password').value;
-
-        // 密码确认验证
-        if (password !== confirmPassword) {
-            document.getElementById('password-error').style.display = 'block';
-            return;
-        }
-
-        // 提交注册请求
-        console.log('注册信息：', {
-            username,
-            password
-        });
-
-        // 模拟注册成功
-        alert('注册成功！');
-        window.location.href = 'login.html';
-    });
+    function register(){
+        axios({
+            // params关键字只针对get请求(axios默认是发送GET请求)
+            url: 'http://localhost:8080/register',
+            method:'post',
+            // data关键字是针对post请求的
+            data:{
+                username:document.getElementById('username').value,
+                password:document.getElementById('password').value,
+                //code:document.getElementById('code').value
+            }
+        }).then((result) => {
+            console.log(result.data.code);
+            if(result.data.code === 200){
+                alert('注册成功');
+                window.location.href = '/login.html';
+            }else if (result.data.code === 304){
+                alert('注册失败');
+            }else if (result.data.code === 303){
+                alert("该用户名已存在");
+            }else if (result.data.code === 302){
+                alert("密码必须为6-10位英文和数字的组合");
+            // }else if (result.data.code === 305){
+            //     alert('验证码错误');
+            }
+        }).catch(function (error){
+            //处理报错
+            console.error(error);
+            alert("注册异常，请联系管理员")
+            //世界上最厉害的代码
+            //location.href = "https://www.baidu.com/s?wd="+error;
+        })
+    }
+    // 刷新验证码
+    // function changeImage(img) {
+    //     //图片重新加载src地址，因为图片是一个GET请求，浏览器有缓存  time 表示是一个随机参数 ，防止浏览器缓存
+    //     img.src="/code?time="+new Date();
+    // }
 </script>
 </body>
 </html>

@@ -21,4 +21,5 @@ public class ResponseUtils<T> {
         this.code = code;
         this.msg = msg;
     }
+
 }

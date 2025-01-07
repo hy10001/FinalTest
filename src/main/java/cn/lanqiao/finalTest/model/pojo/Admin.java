@@ -1,4 +1,4 @@
-package cn.lanqiao.finalTest.dao;
+package cn.lanqiao.finalTest.model.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package cn.lanqiao.finalTest.dao;
+package cn.lanqiao.finalTest.model.dto.admin;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Admin {
+public class Register {
     private String username;
     private String password;
-    private int is_delete;
+    private String phone;
+    private String verifyCode;
 }

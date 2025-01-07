@@ -6,12 +6,12 @@ server:
 spring:
   datasource:
     username: root
-    password: 123456
-    url: jdbc:mysql:aws://lmxdxl99.com.cn:3306
+    password: 20010720Lmx
+    url: jdbc:mysql://47.109.206.82:3306/dreamTeam
     driver-class-name: com.mysql.cj.jdbc.Driver
   data:
     redis:
-      host: 47.109.206.82
+      host: 127.0.0.1
       port: 6379
       lettuce:
         pool:
@@ -23,3 +23,13 @@ spring:
 transaction:
   rollback-on-commit-failure: true
   default-timeout: 30
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+
+aliyun:
+  sms:
+    access-key-id: your-access-key-id
+    access-key-secret: your-access-key-secret
+    sign-name: your-sign-name
+    template-code: SMS_XXXXXXXX

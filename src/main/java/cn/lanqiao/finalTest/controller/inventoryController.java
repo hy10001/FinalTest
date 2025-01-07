@@ -3,7 +3,6 @@ package cn.lanqiao.finalTest.controller;
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryAdd;
 import cn.lanqiao.finalTest.model.dto.inventory.InventoryEdit;
 import cn.lanqiao.finalTest.service.InventoryService;
-import cn.lanqiao.finalTest.utils.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,13 +15,13 @@ public class inventoryController {
     private InventoryService inventoryService;
 
     @RequestMapping("/add_stock")
-    public ResponseUtils add_stock(@RequestBody InventoryAdd inventoryAdd){
+    public cn.lanqiao.finalTest.utils.ResponseUtils add_stock(@RequestBody InventoryAdd inventoryAdd){
         try {
             int result = inventoryService.add_stock(inventoryAdd);
             if (result == 1) {
-                return new ResponseUtils(200, "入库登记成功");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(200, "入库登记成功");
             } else {
-                return new ResponseUtils(300, "入库登记失败");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(300, "入库登记失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -31,13 +30,13 @@ public class inventoryController {
     }
 
     @RequestMapping("/update_stock")
-    public ResponseUtils update_stock(@RequestBody InventoryEdit inventoryEdit){
+    public cn.lanqiao.finalTest.utils.ResponseUtils update_stock(@RequestBody InventoryEdit inventoryEdit){
         try {
             int result = inventoryService.update_stock(inventoryEdit);
             if (result == 1) {
-                return new ResponseUtils(200, "入库成功");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(200, "入库成功");
             } else {
-                return new ResponseUtils(300, "入库失败");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(300, "入库失败");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,13 +44,13 @@ public class inventoryController {
         }
     }
     @RequestMapping("/delete_stock")
-    public ResponseUtils delete_stock(@RequestBody InventoryAdd inventoryAdd){
+    public cn.lanqiao.finalTest.utils.ResponseUtils delete_stock(@RequestBody InventoryAdd inventoryAdd){
         try {
             int result = inventoryService.delete_stock(inventoryAdd.getItemName());
             if (result == 1) {
-                return new ResponseUtils(200, "出库成功");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(200, "出库成功");
             } else {
-                return new ResponseUtils(300, "出库失败");
+                return new cn.lanqiao.finalTest.utils.ResponseUtils(300, "出库失败");
             }
         } catch (Exception e) {
             e.printStackTrace();

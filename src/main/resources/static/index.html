@@ -120,11 +120,11 @@
     <div class="sidebar">
         <ul class="sidebar-menu">
             <li>首页</li>
-            <a href="file/dishes.html"><li>菜品管理</li></a>
-            <a href="file/orders.html"><li>订单管理</li></a>
-            <a href="file/inventory.html"><li>库存管理</li></a>
-            <a href="file/staff.html"><li>员工管理</li></a>
-            <a href="file/finance.html"><li>财务管理</li></a>
+            <a href="dishes.html"><li>菜品管理</li></a>
+            <a href="orders.html"><li>订单管理</li></a>
+            <a href="inventory.html"><li>库存管理</li></a>
+            <a href="staff.html"><li>员工管理</li></a>
+            <a href="finance.html"><li>财务管理</li></a>
         </ul>
     </div>
 
@@ -133,6 +133,7 @@
         <div class="header">
             <h2 class="system-title">食堂管理系统</h2>
             <span class="welcome-text">管理员，您好！</span>
+            <span class="welcome-text" style="cursor: pointer;" onclick="logout()">退出</span>
         </div>
 
         <!-- 数据卡片 -->
@@ -156,4 +157,11 @@
     </div>
 </div>
 </body>
+<script>
+    // 退出登录
+    function logout() {
+        // 可以在这里添加退出相关的API调用
+        window.location.href = 'login.html';
+    }
+</script>
 </html>
