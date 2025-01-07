@@ -1,4 +1,4 @@
-package cn.lanqiao.finalTest.utils;
+package cn.lanqiao.finalTest.Utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

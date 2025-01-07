@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>财务管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+</head>
+
+<body>
+    <div id="App">
+        <div class="block" style="display: inline-block;">
+            <!-- 日期 -->
+            <el-date-picker v-model="form.currentDate" type="datetime" placeholder="选择日期时间">
+            </el-date-picker>
+        </div>
+        <!-- 下拉框 -->
+        <el-select v-model="form.type" placeholder="请选择">
+            <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+        </el-select>
+        <el-button type="success" @click="ifSearch">搜索</el-button>
+        <el-button type="success" @click="add">新增</el-button>
+        <el-button type="info" @click="reset">重置</el-button>
+
+        <br />
+        <br />
+        <!-- 表格 -->
+        <el-table :data="table" style="width: 100%">
+            <el-table-column fixed prop="currentDate" label="日期" width="150" align="center">
+            </el-table-column>
+            <el-table-column prop="type" label="类型" align="center">
+                <template #default="scope">
+                    <div v-if="scope.row.type == '1'"><el-link type="success">收入</el-link></div>
+                    <div v-else><el-link type="danger">支出</el-link></div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="project" label="项目" align="center">
+            </el-table-column>
+            <el-table-column prop="price" label="价格" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="pay" label="支付方式" width="120" align="center">
+            </el-table-column>
+            <el-table-column prop="name" label="经办人" width="300" align="center">
+            </el-table-column>
+            <el-table-column prop="remark" label="备注" width="300" align="center">
+            </el-table-column>
+            <el-table-column fixed="right" label="操作" width=" 200" align="center">
+                <template slot-scope="scope">
+                    <el-button type="success" size="mini" @click="handleClick(scope.row)">编辑</el-button>
+                    <el-button type="warning" size="mini" @click="del(scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <br />
+        <br />
+        <!-- 分页组件 -->
+        <div class="block">
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                :current-page="form.currentNum" :page-sizes="[10, 15, 20, 25]" :page-size="form.size"
+                layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+        </div>
+        <!-- 弹窗 -->
+        <el-dialog :visible.sync="centerDialogVisible" width="40%" center>
+
+            <el-form ref="formRef" style="height:380px" :model="formData" :rules="rules" size="default"
+                label-width="100px">
+                <el-col :span="24">
+                    <el-form-item label="项目" prop="project">
+                        <el-input v-model="formData.project" type="text" placeholder="请输入项目" clearable prefix-icon='Key'
+                            :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                    <el-form-item label="价格" prop="price">
+                        <el-input-number v-model="formData.price" placeholder="价格" :precision='2'></el-input-number>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="24">
+                    <el-form-item label="类型" prop="type">
+                        <el-select v-model="formData.type" placeholder="请选择类型" clearable :style="{width: '100%'}">
+                            <el-option v-for="(item, index) in options" :key="index" :label="item.label"
+                                :value="item.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="14">
+                    <el-form-item label="支付方式" prop="pay">
+                        <el-input v-model="formData.pay" type="text" placeholder="请输入支付方式" clearable prefix-icon='Check'
+                            :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <el-col :span="12">
+                    <el-form-item label="经办人" prop="name">
+                        <el-input v-model="formData.name" type="text" placeholder="请输入经办人" clearable
+                            :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                </el-col>
+                <br />
+                <el-col :span="12">
+                    <el-form-item label="备注" prop="remark" style="position:relative; left:-260px;top:50px">
+                        <el-input v-model="formData.remark" type="textarea" placeholder="请输入备注"
+                            :autosize="{minRows: 4, maxRows: 4}" :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                </el-col>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="cancel()">取 消</el-button>
+                <el-button type="primary" @click="insertAndUpdate()">确 定</el-button>
+            </span>
+        </el-dialog>
+    </div>
+</body>
+
+</html>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script>
+    new Vue({
+        el: "#App",
+        data: {
+            rules: {
+                project: [{
+                    required: true,
+                    message: '请输入项目',
+                    trigger: 'blur'
+                }],
+                price: [{
+                    required: true,
+                    message: '价格',
+                    trigger: 'blur'
+                }],
+                type: [],
+                pay: [{
+                    required: true,
+                    message: '请输入支付方式',
+                    trigger: 'blur'
+                }],
+                name: [{
+                    required: true,
+                    message: '请输入经办人',
+                    trigger: 'blur'
+                }],
+                remark: [],
+            },
+            formData: {
+                id: '',
+                project: "",
+                type: '',
+                price: '',
+                pay: '',
+                name: '',
+                remark: ''
+            },
+            centerDialogVisible: false,   // 弹窗的显示与隐藏;
+            total: '',    // 数据的总数;
+            port: 9090,   // 端口号;需要的时候直接改就行;
+            form: {
+                currentDate: '',
+                type: null,
+                currentNum: 1,
+                size: 10,
+            },
+            options: [{
+                value: "1",
+                label: "收入"
+            }, {
+                value: "2",
+                label: "支出"
+            }],
+            table: []
+        },
+
+        methods: {
+            async del(row) {
+                console.log(row.id);
+
+                await axios.delete(`http://localhost:8080/financial/${row.id}`).then(response => {
+                    if (response.data.code == 200) {
+                        this.$message({
+                            message: '删除成功',
+                            type: 'success'
+                        });
+                    } else {
+                        this.$message.error(`${response.date.message}`);
+                    }
+                })
+                this.init();
+            },
+            add() {
+                this.res();
+                this.centerDialogVisible = true
+
+            },
+            cancel() {
+                this.centerDialogVisible = false;
+                this.res();
+            },
+            async handleClick(row) {
+                this.centerDialogVisible = true;
+                // 这里发送请求进行数据的渲染;
+                await axios.get(`http://localhost:8080/financial/${row.id}`).then(response => {
+                    if (response.data.code != 200) {
+                        this.$message.error(`${response.data.message}`);
+                        return;
+                    }
+                    this.formData = response.data.data;
+
+                })
+
+
+
+                // this.res();  // 清理数据;
+            },
+            handleSizeChange(val) {
+                this.form.size = val;
+                this.init();
+            },
+            handleCurrentChange(val) {
+                this.form.currentNum = val;
+                this.init();
+            },
+            async ifSearch() {
+
+                this.init();
+
+            },
+            res() {
+                this.formData = {
+                    id: '',
+                    project: "",
+                    type: '',
+                    price: '',
+                    pay: '',
+                    name: '',
+                    remark: ''
+                }
+            },
+            async insertAndUpdate() {
+                centerDialogVisible = false
+                await axios.post(`http://localhost:8080/financial/insertAndUpdate`, this.formData).then(response => {
+                    console.log(response);
+                    if (response.data.code == 200) {
+                        this.$message({
+                            message: '消息推送成功',
+                            type: 'success'
+                        });
+                    }
+
+                })
+                this.centerDialogVisible = false
+                this.res();
+                this.init();
+            },
+            reset() {
+                this.form.type = null;
+                this.form.currentDate = '';
+                this.init();
+            },
+            async init() {
+                await axios.post(`http://localhost:8080/financial/select`, this.form).then(response => {
+                    this.table = response.data.data.financialBo
+                    this.total = response.data.data.count
+                })
+            }
+        }, mounted() {
+            this.init();
+        },
+
+    })
+
+</script>
